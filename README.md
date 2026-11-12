@@ -309,6 +309,309 @@ Slack → Home → Green notification line → Integrated Successfully.
 
 * Configure Slack Notifications under Post-build Actions.
 
+* Bro, we'll follow your notebook exactly in the same order, step by step, for the Jenkins–GitHub Webhook experiment.
+
+### Experiment: Jenkins – Webhook
+
+Objective: Automatically trigger a Jenkins pipeline whenever code is pushed to a GitHub repository.
+
+### Step 1 — Download Cloudflared
+
+![Expose local Web App to the internet with Cloudflare tunnels - DEV Community](https://images.openai.com/static-rsc-4/OIOAsXE5qujlKd1OVZAEsKFioPw54mEWCJfkqsHwFDoQ2cnDuPxmsAd39S7sc-WvopkD9HZKiY_zMs7QN7vNdc1vqUt5-6KKKcK3-WP-Ki_rgt44jwLzzb75fAoLZq_XRpg6nMIoXOE4GYXBQA-VmO3e31qJHlhJ97jurRNVQckcy782j-ugy8EtNBSrlvJ5?purpose=fullsize)
+
+* Open the [Cloudflare download page](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/?utm_source=chatgpt.com).
+
+* Download the Windows 64-bit version (`cloudflared-windows-amd64.exe`).
+
+* Save it in your Downloads folder.
+
+### Step 2 — Login to Jenkins
+
+* Open Google Chrome.
+
+* Enter:
+
+`http://localhost:8080`
+
+* Login using your Jenkins username and password.
+
+* Keep Jenkins running.
+
+### Step 3 — Login to GitHub
+
+* Open [GitHub](https://github.com/?utm_source=chatgpt.com).
+
+* Login to your GitHub account.
+
+* Keep GitHub open.
+
+### Step 4 — Open CMD and start Cloudflared
+
+* Press `Windows + R`.
+
+* Type `cmd` and press Enter.
+
+* Execute these commands one by one:
+
+Command 1:
+
+```cmd
+cd %USERPROFILE%\Downloads
+```
+
+Command 2:
+
+```cmd
+dir cloudflared*
+```
+
+Check whether the Cloudflared executable is present.
+
+Command 3:
+
+```cmd
+cloudflared-windows-amd64.exe tunnel --url http://localhost:8080
+```
+
+* Wait for Cloudflared to start.
+
+* You will see a URL similar to:
+
+```text
+https://random-name.trycloudflare.com
+```
+
+6\. Copy this URL and keep it safely.
+
+Keep this CMD window open throughout the experiment. The URL is temporary and may change when you restart the tunnel.
+
+### Step 5 — Create a new repository in GitHub
+
+![Chapter 6 Git and GitHub | The Unix Workbench](https://images.openai.com/static-rsc-4/5N97Q396EVhUF9l_dYS87jeUSvSBcSmg0woEmloPZEOMdBlzl-EuVykr802DeNG3UQg_pafmqIz9HxY-6tbmZpLG3I7L-IAOPgd8oQyhXG-kKmdNuhw3OtWSa4Ba6MSscT873kwbfy8F4EBLZO4HxHSSQ_cMaM1hcDHfwIBBjo6v7nj5Voz4tLA7vAZ0u6FO?purpose=fullsize)
+
+* Open GitHub.
+
+* Click the `+` icon → New repository.
+
+* Enter a repository name, for example:
+
+`Jenkins-Webhook`
+
+* Select Public or Private as instructed by your lab.
+
+* Click Create repository.
+
+* Add the following three files to the repository:
+
+* `app.py`
+
+* `test.py`
+
+* `Jenkinsfile`
+
+7\. Your notebook says to get these files from another repository. Use the files provided by your faculty or lab repository. Don't change their contents unnecessarily.
+
+Check: All three files should be present in your GitHub repository.
+
+### Step 6 — Create a Pipeline in Jenkins
+
+![How to create a Jenkins Pipeline job - DEV Community](https://images.openai.com/static-rsc-4/3fSD9eZdnCtZxyVt8BwFnsbgnA4HaKrLcSd8NnBoVddoZefPsoDSSvbj1rubSKvsk6uKJ34Ef2EL4dV0cXNeSGIH9BxLcIULU72R5Y6JgEnTucAh2s_OH646D_UOo0YFhiSdSdvovSAUiwyFrnIRzPsgdMDS8rX491OR4CXZJVzPh174ujpkD0BjO31kbPKn?purpose=fullsize)
+
+* Open Jenkins: `http://localhost:8080`
+
+* Click New Item.
+
+* Enter the item name:
+
+`S1`
+
+* Select Pipeline.
+
+* Click OK.
+
+Your pipeline job is now created.
+
+### Step 7 — Configure GitHub Webhook
+
+![The importance of verifying webhook signatures | Snyk](https://images.openai.com/static-rsc-4/IYBJeL_BRXXPPvWh4ZU1WPMr0zPn4TBgHTNpms7w0-TU6rUfQ7I5QdlqQQKYIS5J_BF9qNhVWcKIrQvNpjfQ7NSXlZ-IUvqhs_oc-bwCL9WcjqDleJGDizgJwHPWGByLYEUnHpVL1pI0i8-7aW21LdQuFn7V1I8cYh6YO7woqu__M2a3Mobt0yo1XxIrXdMH?purpose=fullsize)
+
+Part A: Configure webhook in GitHub
+
+* Open your GitHub repository.
+
+* Click Settings.
+
+* Select Webhooks from the left menu.
+
+* Click Add webhook.
+
+Fill in the following details:
+
+| Field         | Value                                                 |
+| ------------- | ----------------------------------------------------- |
+| Payload URL   | Your Cloudflared URL + /github-webhook/               |
+| Content type  | application/json                                      |
+| Secret        | Leave blank for this lab, unless instructed otherwise |
+| Which events? | Send me everything                                    |
+
+Example:
+
+```text
+https://random-name.trycloudflare.com/github-webhook/
+```
+
+Remember to use your actual Cloudflared URL, not this example.
+
+5\. Click Add webhook.
+
+Part B: Configure Jenkins URL
+
+* Go back to Jenkins.
+
+* Open Manage Jenkins.
+
+* Go to System.
+
+* Find the Jenkins URL field.
+
+* Paste your public Cloudflared base URL.
+
+Example:
+
+```text
+https://random-name.trycloudflare.com/
+```
+
+6\. Click Save.
+
+### Step 8 — Configure the Jenkins Pipeline
+
+![Automating CI/CD and GitOps with Jenkins | Red Hat Developer](https://images.openai.com/static-rsc-4/q36HEW_NmgZGtjwoA3JuhAAK6p22fMmTjPM__bLXFAKOq3rJFHLXeCer3lZDxPqlJiD-TRb74IGFf3o9msczzB-ReeILpwAdpgZsX_Kz8xQImDWPLergWP3ztgcroCGnbbaOS0guk_0ScvhkEHTTxzwoomSXg-4JFuFfvis7KIoDggyjG-E0VHIpq5K-1Nun?purpose=fullsize)
+
+* Go back to the Jenkins dashboard.
+
+* Open your job `S1`.
+
+* Click Configure.
+
+Part A: Build Triggers
+
+* Scroll down to Build Triggers.
+
+* Select:
+
+    `GitHub hook trigger for GITScm polling`
+
+Part B: Pipeline
+
+* Scroll down to the Pipeline section.
+
+* Under Definition, select:
+
+    `Pipeline script from SCM`
+
+* Under SCM, select:
+
+    `Git`
+
+* Repository URL: Paste your GitHub repository URL.
+
+    Example:
+
+    ```text
+    https://github.com/username/Jenkins-Webhook.git
+    ```
+
+* Branch Specifier:
+
+    ```text
+    */main
+    ```
+
+    Check your actual branch name in GitHub. If it is `master`, use `*/master`.
+
+* Script Path:
+
+    ```text
+    Jenkinsfile
+    ```
+
+* Click Apply.
+
+* Click Save.
+
+### Step 9 — Test the Webhook
+
+Now check whether everything is working.
+
+* Open your GitHub repository.
+
+* Open `app.py` or another file.
+
+* Make a small change.
+
+* Click Commit changes.
+
+* Go back to Jenkins.
+
+* Open the `S1` pipeline.
+
+* Check Build History.
+
+![](https://images.openai.com/static-rsc-4/87S1iJvCzk77L0JHRyKV8CB9er8OW70gAOSizjp9z2veEYfb6ONx8M9wTQmnsflKRbQtQIFLskSThWnLGB4_w60J49_IDVNBe0IDQs7p27M8DcdzW6auNUOIILC-9eWa3236RrPFzAcE6Qxa8n6V-fFhfBFardn9aGh7X_C8KmDRD6j_1MzXlOTJOIFBm5WC?purpose=fullsize)
+
+Expected result
+
+A new Jenkins build should automatically start after your GitHub commit.
+
+You can also verify the webhook:
+
+* GitHub → Repository → Settings → Webhooks.
+
+* Click your webhook.
+
+* Open Recent Deliveries.
+
+* Check the latest delivery response.
+
+A successful delivery generally returns HTTP 200.
+
+### Final experiment checklist
+
+Experiment progress
+
+0/13
+
+Download Cloudflared
+
+Login to Jenkins
+
+Login to GitHub
+
+Run Cloudflared tunnel in CMD
+
+Create GitHub repository
+
+Upload app.py, test.py and Jenkinsfile
+
+Create S1 Pipeline in Jenkins
+
+Configure GitHub webhook
+
+Configure Jenkins URL
+
+Enable GitHub hook trigger
+
+Configure Pipeline script from SCM
+
+Apply and Save
+
+Commit a change and verify automatic build
+
+Important: Keep Jenkins running and the Cloudflared CMD window open while testing. Stop the tunnel after completing the experiment. Don't share the temporary public URL or Jenkins credentials.
+
+Follow these steps in order, and don't skip ahead. If you get stuck at any step, send me a screenshot and I'll guide you from that exact screen.
+
 * Save and click Build Now.
 
 * Verify successful notification in Slack.
